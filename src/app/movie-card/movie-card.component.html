@@ -1,0 +1,25 @@
+<div class="movies-container">
+    <mat-card *ngFor="let movie of displayedMovies" class="movie-card"
+        [attr.aria-label]="'Movie card for ' + movie.Title">
+        <mat-card-header>
+            <mat-card-title>{{ movie.Title }}</mat-card-title>
+            <mat-card-subtitle> {{ movie.releaseYear }}</mat-card-subtitle>
+        </mat-card-header>
+        <img mat-card-image [src]="movie.ImagePath" alt="{{ movie.Title }}" />
+        <mat-card-actions>
+            <div>
+                <button mat-button (click)="openMovieDetailsDialog(movie)"
+                    [attr.aria-label]="'View more details for ' + movie.Title"> More Details </button>
+            </div>
+            <div>
+                <button mat-icon-button (click)="toggleFavorite(movie._id)"
+                    [attr.aria-label]="isFavorite(movie._id) ? 'Remove ' + movie.Title + ' from favorites' : 'Add ' + movie.Title + ' to favorites'">
+                    <mat-icon aria-hidden="true">{{ isFavorite(movie._id) ? 'favorite' : 'favorite_border' }}</mat-icon>
+                </button>
+            </div>
+        </mat-card-actions>
+    </mat-card>
+</div>
+<mat-paginator [length]="movies.length" [pageSize]="pageSize" [pageSizeOptions]="[6, 12, 16]"
+    [hidePageSize]="hidePageSize" (page)="onPageChange($event)" aria-label="Select page">
+</mat-paginator>
