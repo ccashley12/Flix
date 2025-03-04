@@ -1,0 +1,33 @@
+<h2 mat-dialog-title class="dialog-title"
+    [attr.aria-label]="'Movie: ' + data.movie.Title + ' '">
+    {{ data.movie.Title }}
+</h2>
+<mat-dialog-content [attr.aria-label]="'Movie details'">
+    <div class="vertical-layout">
+        <div class="image-container">
+            <img [src]="data.movie.ImagePath" [attr.alt]="data.movie.Title" />
+        </div>
+        <p class="descr">{{ data.movie.Description }}</p>
+        <div class="details">
+            <p>
+                <strong>Genre:</strong>
+                <span class="clickable" (click)="openGenreDialog(data.movie.Genre)"
+                [attr.aria-label]="'View genre details for ' + data.movie.Genre.Name">
+                {{ data.movie.Genre?.Name }}
+            </span>
+            </p>
+            <p>
+                <strong>Director:</strong>
+                <span class="clickable" (click)="openDirectorDialog(data.movie.Director.Name)"
+                    [attr.aria-label]="'View director details for ' + data.movie.Director.Name">
+                    {{ data.movie.Director?.Name }}
+                </span>
+            </p>
+        </div>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close [attr.aria-label]="'Close dialog'"> Close <mat-icon
+            aria-hidden="true">close</mat-icon>
+    </button>
+</mat-dialog-actions>
