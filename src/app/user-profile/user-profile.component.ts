@@ -30,9 +30,9 @@ import { MatDialog } from '@angular/material/dialog';
   ],
 })
 export class UserProfileComponent implements OnInit {
-  user: any = {}; // Stores user data
+  User: any = {}; // Stores user data
   updatedUser: any = {}; // Stores updated user data for edits
-  favoriteMovies: any[] = []; // List of user's favorite movies
+  FavoriteMovies: any[] = []; // List of user's favorite movies
   hide: boolean = true; // For password visibility
 
   // Dependency injection
@@ -48,27 +48,27 @@ export class UserProfileComponent implements OnInit {
 
   // Fetch user data from API
   getUserProfile(): void {
-    const username = localStorage.getItem('user') || '';
-    if (!username) {
+    const Username = localStorage.getItem('user') || '';
+    if (!Username) {
       console.error('No username found in localStorage.');
       return;
     }
 
-    this.fetchApiData.getUser(username).subscribe({
+    this.fetchApiData.getUser(Username).subscribe({
       next: (resp: any) => {
         console.log('API Response:', resp);
-        if (resp && resp.user) {
-          this.user = resp.user;
+        if (resp && resp.User) {
+          this.User = resp.user;
           this.updatedUser = {
-            username: this.user.Username || '',
-            email: this.user.Email || '',
-            password: '',
-            birthday: this.user.Birthday
-              ? this.formatDate(this.user.Birthday)
+            Username: this.User.Username || '',
+            Email: this.User.Email || '',
+            Password: '',
+            Birthday: this.User.Birthday
+              ? this.formatDate(this.User.Birthday)
               : '',
           };
-          this.favoriteMovies = this.user.favorites || [];
-          localStorage.setItem('user', JSON.stringify(this.user));
+          this.FavoriteMovies = this.User.FavoriteMovies || [];
+          localStorage.setItem('user', JSON.stringify(this.User));
         } else {
           console.error('User data is missing from the API response.');
         }
@@ -101,21 +101,21 @@ export class UserProfileComponent implements OnInit {
   };
 
   // Remove from favorites
-  removeFromFavorites(movieId: string): void {
-    const username = this.fetchApiData.getUsername();
-    if (!username) {
+  removeFromFavorites(movieID: string): void {
+    const Username = this.fetchApiData.getUsername();
+    if (!Username) {
       console.error('No username found in localStorage.');
       return;
     }
 
-    this.fetchApiData.removeFavoriteMovie(movieId).subscribe({
+    this.fetchApiData.removeFavoriteMovie(movieID).subscribe({
       next: (response) => {
-        this.favoriteMovies = this.favoriteMovies.filter(
-          (movie) => movie.movieId !== movieId,
+        this.FavoriteMovies = this.FavoriteMovies.filter(
+          (movie) => movie.movieID !== movieID,
         );
 
         const updatedUser = JSON.parse(localStorage.getItem('user') || '{}');
-        updatedUser.favorites = this.favoriteMovies;
+        updatedUser.favorites = this.FavoriteMovies;
         localStorage.setItem('user', JSON.stringify(updatedUser));
       },
       error: (err) =>
@@ -125,8 +125,8 @@ export class UserProfileComponent implements OnInit {
 
   // Update user profile
   updateUserProfile(): void {
-    const username = this.fetchApiData.getUsername();
-    if (!username) {
+    const Username = this.fetchApiData.getUsername();
+    if (!Username) {
       console.error('No username found in localStorage.');
       return;
     }
@@ -134,11 +134,11 @@ export class UserProfileComponent implements OnInit {
     const updatedData: any = {};
     if (
       this.updatedUser.Username &&
-      this.updatedUser.Username !== this.user.Username
+      this.updatedUser.Username !== this.User.Username
     ) {
       updatedData.newUsername = this.updatedUser.Username;
     }
-    if (this.updatedUser.Email && this.updatedUser.Email !== this.user.Email) {
+    if (this.updatedUser.Email && this.updatedUser.Email !== this.User.Email) {
       updatedData.newEmail = this.updatedUser.Email;
     }
     if (this.updatedUser.Password && this.updatedUser.Password.trim()) {
@@ -146,7 +146,7 @@ export class UserProfileComponent implements OnInit {
     }
     if (
       this.updatedUser.Birthday &&
-      this.updatedUser.Birthday !== this.user.Birthday
+      this.updatedUser.Birthday !== this.User.Birthday
     ) {
       updatedData.newBirthday = this.updatedUser.Birthday;
     }
@@ -162,10 +162,10 @@ export class UserProfileComponent implements OnInit {
         this.snackBar.open('Profile updated successfully!', 'OK', {
           duration: 3000,
         });
-        localStorage.setItem('user', JSON.stringify(resp.user));
+        localStorage.setItem('user', JSON.stringify(resp.User));
 
-        if (resp.user.Username && resp.user.Username !== username) {
-          localStorage.setItem('username', resp.user.Username);
+        if (resp.User.Username && resp.User.Username !== Username) {
+          localStorage.setItem('username', resp.User.Username);
         }
 
         this.getUserProfile();

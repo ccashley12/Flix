@@ -10,13 +10,13 @@
                     <mat-form-field appearance="outline">
                         <mat-label>Username</mat-label>
                         <input matInput [(ngModel)]="updatedUser.Username" name="username"
-                            [attr.aria-label]="'Username input'" placeholder="{{ user.Username }}">
+                            [attr.aria-label]="'Username input'" placeholder="{{ User.Username }}">
                         <mat-icon matSuffix aria-hidden="true">mode_edit</mat-icon>
                     </mat-form-field>
                     <mat-form-field appearance="outline">
                         <mat-label>Email</mat-label>
                         <input matInput type="email" [(ngModel)]="updatedUser.Email" name="email"
-                            [attr.aria-label]="'Email input'" placeholder="{{ user.Email }}">
+                            [attr.aria-label]="'Email input'" placeholder="{{ User.Email }}">
                         <mat-icon matSuffix aria-hidden="true">mode_edit</mat-icon>
                     </mat-form-field>
                     <mat-form-field appearance="outline">
@@ -50,14 +50,14 @@
             </ng-template>
             <div class="tab-content">
                 <h2>Your Favorite Movies</h2>
-                <ul *ngIf="favoriteMovies.length > 0; else noFavorites" class="listbox" cdkListbox
+                <ul *ngIf="FavoriteMovies.length > 0; else noFavorites" class="listbox" cdkListbox
                     [attr.aria-label]="'Favorite Movies List'">
-                    <li *ngFor="let movie of favoriteMovies">
+                    <li *ngFor="let movie of FavoriteMovies">
                         <a class="clickable" (click)="openMovie(movie)" style="cursor:pointer;"
                             [attr.aria-label]="'Open details for ' + movie.Title">
                             {{ movie.Title }}
                         </a>
-                        <span class="delete-icon clickable" (click)="removeFromFavorites(movie.movieId)"
+                        <span class="delete-icon clickable" (click)="removeFromFavorites(movie.movieID)"
                             [attr.aria-label]="'Remove ' + movie.Title + ' from favorites'">
                             <mat-icon aria-hidden="true">delete</mat-icon>
                         </span>
