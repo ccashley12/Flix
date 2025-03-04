@@ -96,9 +96,9 @@ export class FetchApiDataService {
   };
 
   //Get user info
-  public getUser(username: string): Observable<any> {
+  public getUser(Username: string): Observable<any> {
     return this.http
-      .get<any>(apiUrl + `users/${username}`, { headers: this.getAuthHeaders() })
+      .get<any>(apiUrl + `users/${Username}`, { headers: this.getAuthHeaders() })
       .pipe(map(this.extractResponseData),
         catchError((error) => {
           console.error('Error fetching user info:', error);
@@ -117,45 +117,46 @@ export class FetchApiDataService {
 
   //Get user favorite movies
   public getUserFavorites(): Observable<any> {
-    const username = this.getUsername();
-    if (!username) {
+    const Username = this.getUsername();
+    if (!Username) {
       console.error('Error: No username found in localStorage');
       return throwError(() => new Error('User is not logged in.'));
     }
 
     return this.http
-      .get<{ user: { favorites: any[] } }>
-      (apiUrl + `users/${encodeURIComponent(username)}`,
+      .get<{ User: { FavoriteMovies: any[] } }>
+      (apiUrl + `users/${encodeURIComponent(Username)}`,
         {
           headers: this.getAuthHeaders(),
         },
       )
       .pipe(
         map((response) => {
-          if (!response.user || !Array.isArray(response.user.favorites)) {
+          console.log('API response:', response);  // Log the entire response
+          if (!response.User || !response.User.FavoriteMovies || !Array.isArray(response.User.FavoriteMovies)) {
             console.error('Favorites response is not an array:', response);
             return [];
           }
           const updatedUser = JSON.parse(localStorage.getItem('user') || '{}');
-          updatedUser.favorites = response.user.favorites;
+          updatedUser.FavoriteMovies = response.User.FavoriteMovies || [];
           localStorage.setItem('user', JSON.stringify(updatedUser));
-
-          return response.user.favorites.map((fav) => fav.movieId);
+        
+          return response.User.FavoriteMovies.map((fav) => fav.movieID);
         }),
         catchError(this.handleError),
       );
   };
 
   //Post Favorite movies to user profile
-  public addFavoriteMovie(movieId: string): Observable<any> {
-    const username = this.getUsername();
-    if (!username) {
+  public addFavoriteMovie(movieID: string): Observable<any> {
+    const Username = this.getUsername();
+    if (!Username) {
       return throwError(() => new Error('User is not logged in.'));
     }
 
     return this.http
       .put(
-        `${apiUrl}users/${encodeURIComponent(username)}/movies/${movieId}`,
+        `${apiUrl}users/${encodeURIComponent(Username)}/movies/${movieID}`,
         {},
         { headers: this.getAuthHeaders() },
       )
@@ -164,14 +165,14 @@ export class FetchApiDataService {
 
   //Edit user information
   public updateUser(updatedDetails: any): Observable<any> {
-    const username = this.getUsername();
-    if (!username) {
+    const Username = this.getUsername();
+    if (!Username) {
       return throwError(() => new Error('User is not logged in.'));
     }
 
     return this.http
-      .put<{ user: any }>(
-        `${apiUrl}users/${encodeURIComponent(username)}`,
+      .put<{ User: any }>(
+        `${apiUrl}users/${encodeURIComponent(Username)}`,
         updatedDetails,
         {
           headers: this.getAuthHeaders(),
@@ -179,11 +180,11 @@ export class FetchApiDataService {
       )
       .pipe(
         map((response) => {
-          if (response.user) {
-            localStorage.setItem('username', JSON.stringify(response.user));
+          if (response.User) {
+            localStorage.setItem('username', JSON.stringify(response.User));
 
-            if (response.user.username && response.user.username !== username) {
-              localStorage.setItem('username', response.user.username);
+            if (response.User.Username && response.User.Username !== Username) {
+              localStorage.setItem('username', response.User.Username);
             }
           }
           return response;
@@ -200,15 +201,15 @@ export class FetchApiDataService {
   };
 
   //Delete favorite movie from user account
-  public removeFavoriteMovie(movieId: string): Observable<any> {
-    const username = this.getUsername();
-    if (!username) {
+  public removeFavoriteMovie(movieID: string): Observable<any> {
+    const Username = this.getUsername();
+    if (!Username) {
       return throwError(() => new Error('User is not logged in.'));
     }
 
     return this.http
       .delete(
-        `${apiUrl}users/${encodeURIComponent(username)}/favorites/${movieId}`,
+        `${apiUrl}users/${encodeURIComponent(Username)}/favorites/${movieID}`,
         { headers: this.getAuthHeaders() },
       )
       .pipe(catchError(this.handleError));
