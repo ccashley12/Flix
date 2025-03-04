@@ -29,7 +29,7 @@ import { MovieDetailsDialogComponent } from '../movie-details-dialog/movie-detai
 export class MovieCardComponent implements OnInit {
   movies: any[] = [];
   displayedMovies: any[] = [];
-  favoriteMovies: string[] = [];
+  FavoriteMovies: string[] = [];
 
   hidePageSize = true;
   pageSize = 6;
@@ -64,7 +64,7 @@ export class MovieCardComponent implements OnInit {
   fetchFavorites(): void {
     this.fetchApiData.getUserFavorites().subscribe({
       next: (favorites: string[]) => {
-        this.favoriteMovies = favorites;
+        this.FavoriteMovies = favorites;
         const updatedUser = JSON.parse(localStorage.getItem('user') || '{}');
         updatedUser.favorites = favorites;
         localStorage.setItem('user', JSON.stringify(updatedUser));
@@ -73,17 +73,17 @@ export class MovieCardComponent implements OnInit {
     });
   };
 
-  isFavorite(movieId: string): boolean {
-    return this.favoriteMovies.includes(movieId);
+  isFavorite(movieID: string): boolean {
+    return this.FavoriteMovies.includes(movieID);
   };
 
-  toggleFavorite(movieId: string): void {
-    if (this.isFavorite(movieId)) {
+  toggleFavorite(movieID: string): void {
+    if (this.isFavorite(movieID)) {
       // Remove from favorites
-      this.fetchApiData.removeFavoriteMovie(movieId).subscribe({
+      this.fetchApiData.removeFavoriteMovie(movieID).subscribe({
         next: () => {
-          this.favoriteMovies = this.favoriteMovies.filter(
-            (id) => id !== movieId,
+          this.FavoriteMovies = this.FavoriteMovies.filter(
+            (id) => id !== movieID,
           );
           this.updateLocalFavorites();
         },
@@ -91,9 +91,9 @@ export class MovieCardComponent implements OnInit {
       });
     } else {
       // Add to favorites
-      this.fetchApiData.addFavoriteMovie(movieId).subscribe({
+      this.fetchApiData.addFavoriteMovie(movieID).subscribe({
         next: () => {
-          this.favoriteMovies.push(movieId);
+          this.FavoriteMovies.push(movieID);
           this.updateLocalFavorites();
         },
         error: (err) => console.error('Error adding favorite:', err),
@@ -104,7 +104,7 @@ export class MovieCardComponent implements OnInit {
   // Helper function to update local storage & detect changes
   updateLocalFavorites(): void {
     const updatedUser = JSON.parse(localStorage.getItem('user') || '{}');
-    updatedUser.favorites = this.favoriteMovies;
+    updatedUser.favorites = this.FavoriteMovies;
     localStorage.setItem('user', JSON.stringify(updatedUser));
 
     this.cdRef.detectChanges();
