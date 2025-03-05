@@ -25,7 +25,6 @@ import { MatDialog } from '@angular/material/dialog';
     MatIconModule,
     CommonModule,
     MatTabsModule,
-    CdkListbox,
     RouterModule,
   ],
 })
@@ -48,7 +47,7 @@ export class UserProfileComponent implements OnInit {
 
   // Fetch user data from API
   getUserProfile(): void {
-    const Username = localStorage.getItem('user') || '';
+    const Username = this.fetchApiData.getUsername();
     if (!Username) {
       console.error('No username found in localStorage.');
       return;
@@ -58,16 +57,15 @@ export class UserProfileComponent implements OnInit {
       next: (resp: any) => {
         console.log('API Response:', resp);
         if (resp && resp.User) {
-          this.User = resp.user;
+          this.User = resp.User;
+          this.updatedUser = this.updatedUser || {};
           this.updatedUser = {
             Username: this.User.Username || '',
             Email: this.User.Email || '',
             Password: '',
-            Birthday: this.User.Birthday
-              ? this.formatDate(this.User.Birthday)
-              : '',
+            Birthday: this.User.Birthday ? this.formatDate(this.User.Birthday) : '',
           };
-          this.FavoriteMovies = this.User.FavoriteMovies || [];
+          this.FavoriteMovies = Array.isArray(this.User.FavoriteMovies) ? this.User.FavoriteMovies : [];
           localStorage.setItem('user', JSON.stringify(this.User));
         } else {
           console.error('User data is missing from the API response.');
@@ -165,7 +163,7 @@ export class UserProfileComponent implements OnInit {
         localStorage.setItem('user', JSON.stringify(resp.User));
 
         if (resp.User.Username && resp.User.Username !== Username) {
-          localStorage.setItem('username', resp.User.Username);
+          localStorage.setItem('user', resp.User.Username);
         }
 
         this.getUserProfile();
