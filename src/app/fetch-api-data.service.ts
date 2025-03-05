@@ -98,17 +98,17 @@ export class FetchApiDataService {
   //Get user info
   public getUser(Username: string): Observable<any> {
     return this.http
-      .get<any>(apiUrl + `users/${Username}`, { headers: this.getAuthHeaders() })
+      .get(`${apiUrl}users/${encodeURIComponent(Username)}`, { headers: this.getAuthHeaders() })
       .pipe(map(this.extractResponseData),
         catchError((error) => {
           console.error('Error fetching user info:', error);
           return this.handleError(error); // Pass the error to your error handler
         })
       );
-  }
+  };
   public getUsername(): string | null {
     try {
-      return localStorage.getItem('username'); // Directly get the username from localStorage
+      return localStorage.getItem('user'); // Directly get the username from localStorage
     } catch (error) {
       console.error('Error retrieving username from localStorage:', error);
       return null;
@@ -125,7 +125,7 @@ export class FetchApiDataService {
 
     return this.http
       .get<{ User: { FavoriteMovies: any[] } }>
-      (apiUrl + `users/${encodeURIComponent(Username)}`,
+      (`${apiUrl}/users/${encodeURIComponent(Username)}`,
         {
           headers: this.getAuthHeaders(),
         },
@@ -138,7 +138,7 @@ export class FetchApiDataService {
             return [];
           }
           const updatedUser = JSON.parse(localStorage.getItem('user') || '{}');
-          updatedUser.FavoriteMovies = response.User.FavoriteMovies || [];
+          updatedUser.FavoriteMovies = response.User.FavoriteMovies;
           localStorage.setItem('user', JSON.stringify(updatedUser));
         
           return response.User.FavoriteMovies.map((fav) => fav.movieID);
@@ -181,7 +181,7 @@ export class FetchApiDataService {
       .pipe(
         map((response) => {
           if (response.User) {
-            localStorage.setItem('username', JSON.stringify(response.User));
+            localStorage.setItem('user', JSON.stringify(response.User));
 
             if (response.User.Username && response.User.Username !== Username) {
               localStorage.setItem('username', response.User.Username);
@@ -195,8 +195,9 @@ export class FetchApiDataService {
 
   //Delete user account
   public deleteUser(): Observable<any> {
+    const Username = this.getUsername();
     return this.http
-      .delete(apiUrl + 'users', { headers: this.getAuthHeaders() })
+      .delete(`${apiUrl}/users/${Username}`, { headers: this.getAuthHeaders() })
       .pipe(catchError(this.handleError));
   };
 
