@@ -10,8 +10,8 @@ html {
         theme-type: dark,
       ),
       typography: (
-        plain-family: Arsenal,
-        brand-family: Arsenal,
+        plain-family: Libre Franklin,
+        brand-family: Arsenal SC,
       ),
       density: 0,
     )
@@ -20,7 +20,7 @@ html {
 
 // Typography & Global Styles
 body {
-  font-family: "Arsenal", serif;
+  font-family: "Libre Franklin", sans-serif;
   text-align: center;
 }
 
@@ -28,7 +28,7 @@ h1,
 h2,
 h3,
 .list_label {
-  font-family: "Arsenal", serif;
+  font-family: "Arsenal SC", sans-serif;
   text-transform: uppercase;
 }
 
@@ -83,7 +83,7 @@ mat-form-field {
   color: var(--mat-sys-inverse-primary);
 
   &:hover {
-    opacity: 0.5;
+    opacity: .5;
   }
 }
 
@@ -160,7 +160,7 @@ body .profile .delete-button {
   }
 
   &:hover {
-    transform: scale(1.2);
+    transform: scale(2.2);
     color: #ed2121;
   }
 }
