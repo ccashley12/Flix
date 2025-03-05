@@ -209,7 +209,7 @@ export class FetchApiDataService {
 
     return this.http
       .delete(
-        `${apiUrl}users/${encodeURIComponent(Username)}/favorites/${movieID}`,
+        `${apiUrl}users/${encodeURIComponent(Username)}/movies/${movieID}`,
         { headers: this.getAuthHeaders() },
       )
       .pipe(catchError(this.handleError));
