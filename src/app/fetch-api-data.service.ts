@@ -3,13 +3,13 @@ import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http
 import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators'; 
 
-//Declaring the api url that will provide data for the client app
-const apiUrl = 'https://cinema-express-948d60ca8d20.herokuapp.com/';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FetchApiDataService {
+  private apiUrl = 'https://cinema-express-948d60ca8d20.herokuapp.com/';
+
   // Inject the HttpClient module to the constructor params
  // This will provide HttpClient to the entire class, making it available via this.http
   constructor(private http: HttpClient) {}
@@ -17,7 +17,7 @@ export class FetchApiDataService {
  // Making the api call for the user registration endpoint
  public userRegistration(userDetails: any): Observable<any> {
   return this.http
-    .post(apiUrl + 'users', userDetails, {
+    .post(this.apiUrl + 'users', userDetails, {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     })
     .pipe(
@@ -34,7 +34,7 @@ export class FetchApiDataService {
       .post<{
         token: string;
         user: { Username: string };
-      }>(`${apiUrl}login`, userDetails)
+      }>(`${this.apiUrl}login`, userDetails)
       .pipe(
         map((response) => {
           if (response.token && response.user.Username) {
@@ -57,22 +57,22 @@ export class FetchApiDataService {
       return new HttpHeaders();
     }
     return new HttpHeaders({
-      Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
     });
   };
 
   //Get ALL movies
   public getAllMovies(): Observable<any> {
     return this.http
-      .get(`${apiUrl}movies`, { headers: this.getAuthHeaders() })
+      .get(`${this.apiUrl}movies`, { headers: this.getAuthHeaders() })
       .pipe(catchError(this.handleError));
   };
 
   //Get single movie details
   public getMovie(title: string): Observable<any> {
     return this.http
-      .get(`${apiUrl}movies/${encodeURIComponent(title)}`, {
+      .get(`${this.apiUrl}movies/${encodeURIComponent(title)}`, {
         headers: this.getAuthHeaders(),
       })
       .pipe(catchError(this.handleError));
@@ -81,7 +81,7 @@ export class FetchApiDataService {
   //Get director info
   public getDirector(directorName: string): Observable<any> {
     return this.http
-      .get(apiUrl + `movies/directors/${directorName}`, {
+      .get(this.apiUrl + `movies/directors/${directorName}`, {
         headers: this.getAuthHeaders(),
       })
       .pipe(catchError(this.handleError));
@@ -90,7 +90,7 @@ export class FetchApiDataService {
   //Get genre info
   public getGenre(genreName: string): Observable<any> {
     return this.http
-      .get(apiUrl + `movies/genre/${genreName}`, { headers: this.getAuthHeaders() })
+      .get(this.apiUrl + `movies/genre/${genreName}`, { headers: this.getAuthHeaders() })
       .pipe(map(this.extractResponseData),
         catchError(this.handleError));
   };
@@ -98,17 +98,21 @@ export class FetchApiDataService {
   //Get user info
   public getUser(Username: string): Observable<any> {
     return this.http
-      .get(`${apiUrl}users/${encodeURIComponent(Username)}`, { headers: this.getAuthHeaders() })
-      .pipe(map(this.extractResponseData),
+      .get(`${this.apiUrl}users/${encodeURIComponent(Username)}`, { headers: this.getAuthHeaders() })
+      .pipe(
+        map((response) => {
+          console.log('API Response:', response);  // Log the full response to check
+          return this.extractResponseData(response);  // Assuming extractResponseData is a function that processes the data
+        }),
         catchError((error) => {
           console.error('Error fetching user info:', error);
-          return this.handleError(error); // Pass the error to your error handler
+          return this.handleError(error);  // Pass the error to your error handler
         })
       );
-  };
+  }
   public getUsername(): string | null {
     try {
-      return localStorage.getItem('user'); // Directly get the username from localStorage
+      return localStorage.getItem('username'); // Directly get the username from localStorage
     } catch (error) {
       console.error('Error retrieving username from localStorage:', error);
       return null;
@@ -122,28 +126,32 @@ export class FetchApiDataService {
       console.error('Error: No username found in localStorage');
       return throwError(() => new Error('User is not logged in.'));
     }
-
+  
     return this.http
-      .get<{ User: { FavoriteMovies: any[] } }>
-      (`${apiUrl}/users/${encodeURIComponent(Username)}`,
-        {
-          headers: this.getAuthHeaders(),
-        },
+      .get<{ User: { FavoriteMovies: any[] } }>(
+        `${this.apiUrl}users/${encodeURIComponent(Username)}`, 
+        { headers: this.getAuthHeaders() }
       )
       .pipe(
         map((response) => {
-          console.log('API response:', response);  // Log the entire response
-          if (!response.User || !response.User.FavoriteMovies || !Array.isArray(response.User.FavoriteMovies)) {
+          console.log('API response:', response); // Log the entire response
+  
+          // Ensure FavoriteMovies is an array
+          if (!response.User || !Array.isArray(response.User.FavoriteMovies)) {
             console.error('Favorites response is not an array:', response);
             return [];
           }
-          const updatedUser = JSON.parse(localStorage.getItem('user') || '{}');
+  
+          // Retrieve and update user in localStorage
+          const storedUser = localStorage.getItem('user');
+          const updatedUser = storedUser ? JSON.parse(storedUser) : {};
           updatedUser.FavoriteMovies = response.User.FavoriteMovies;
           localStorage.setItem('user', JSON.stringify(updatedUser));
-        
+  
+          // Return only the movie IDs
           return response.User.FavoriteMovies.map((fav) => fav.movieID);
         }),
-        catchError(this.handleError),
+        catchError((error) => this.handleError(error)), // Ensure this is properly defined
       );
   };
 
@@ -155,10 +163,10 @@ export class FetchApiDataService {
     }
 
     return this.http
-      .put(
-        `${apiUrl}users/${encodeURIComponent(Username)}/movies/${movieID}`,
+      .post(
+        `${this.apiUrl}users/${encodeURIComponent(Username)}/movies/${movieID}`, 
         {},
-        { headers: this.getAuthHeaders() },
+        { headers: this.getAuthHeaders() }
       )
       .pipe(catchError(this.handleError));
   };
@@ -172,7 +180,7 @@ export class FetchApiDataService {
 
     return this.http
       .put<{ User: any }>(
-        `${apiUrl}users/${encodeURIComponent(Username)}`,
+        `${this.apiUrl}users/${encodeURIComponent(Username)}`,
         updatedDetails,
         {
           headers: this.getAuthHeaders(),
@@ -197,7 +205,7 @@ export class FetchApiDataService {
   public deleteUser(): Observable<any> {
     const Username = this.getUsername();
     return this.http
-      .delete(`${apiUrl}/users/${Username}`, { headers: this.getAuthHeaders() })
+      .delete(`${this.apiUrl}users/${Username}`, { headers: this.getAuthHeaders() })
       .pipe(catchError(this.handleError));
   };
 
@@ -210,7 +218,7 @@ export class FetchApiDataService {
 
     return this.http
       .delete(
-        `${apiUrl}users/${encodeURIComponent(Username)}/movies/${movieID}`,
+        `${this.apiUrl}users/${encodeURIComponent(Username)}/movies/${movieID}`,
         { headers: this.getAuthHeaders() },
       )
       .pipe(catchError(this.handleError));
