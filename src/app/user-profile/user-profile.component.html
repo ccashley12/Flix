@@ -53,7 +53,7 @@
                 <ul *ngIf="FavoriteMovies.length > 0; else noFavorites" class="listbox" cdkListbox
                     [attr.aria-label]="'Favorite Movies List'">
                     <li *ngFor="let movie of FavoriteMovies">
-                        <a class="clickable" (click)="openMovie(movie)" style="cursor:pointer;"
+                        <a class="clickable" (click)="openMovie(movie.movieID)" style="cursor:pointer;"
                             [attr.aria-label]="'Open details for ' + movie.Title">
                             {{ movie.Title }}
                         </a>
