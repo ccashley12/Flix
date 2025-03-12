@@ -46,7 +46,7 @@ export class MovieCardComponent implements OnInit {
     // Load movies and favorites on component init
     this.fetchMovies();
     this.fetchFavorites();
-  };
+  }
 
   // Fetch all movies from API and update the displayed movies (for pagination)
   fetchMovies(): void {
@@ -65,7 +65,7 @@ export class MovieCardComponent implements OnInit {
     this.fetchApiData.getUserFavorites().subscribe({
       next: (favorites: string[]) => {
         this.FavoriteMovies = favorites;
-        const updatedUser = JSON.parse(localStorage.getItem('user') || '{}');
+        const updatedUser = JSON.parse(localStorage.getItem('User') || '{}');
         updatedUser.favorites = favorites;
         localStorage.setItem('user', JSON.stringify(updatedUser));
       },
