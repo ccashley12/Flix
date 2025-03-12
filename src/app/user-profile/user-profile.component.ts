@@ -9,7 +9,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
-import { CdkListbox } from '@angular/cdk/listbox';
 import { MovieDetailsDialogComponent } from '../movie-details-dialog/movie-details-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -47,18 +46,20 @@ export class UserProfileComponent implements OnInit {
 
   // Fetch user data from API
   getUserProfile(): void {
-    const Username = this.fetchApiData.getUsername();
+    const Username = localStorage.getItem('user');
     if (!Username) {
       console.error('No username found in localStorage.');
+      this.snackBar.open('No username found in localStorage. Please log in.', 'OK', {
+        duration: 4000,
+      });
       return;
     }
 
     this.fetchApiData.getUser(Username).subscribe({
       next: (resp: any) => {
         console.log('API Response:', resp);
-        if (resp && resp.User) {
+        if (resp.User) {
           this.User = resp.User;
-          this.updatedUser = this.updatedUser || {};
           this.updatedUser = {
             Username: this.User.Username || '',
             Email: this.User.Email || '',
