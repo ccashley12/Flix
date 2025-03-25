@@ -6,21 +6,28 @@ import { MovieCardComponent } from './movie-card/movie-card.component';
 import { AuthGuard } from './auth.guard';
 
 export const routes: Routes = [
-  { path: 'welcome', component: WelcomePageComponent },
-  {
-    path: 'movies',
-    component: MovieCardComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'profile',
-    component: UserProfileComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: '',
-    redirectTo: 'welcome',
-    pathMatch: 'full',
-  },
-  { path: '**', redirectTo: 'welcome', pathMatch: 'full' },
+    { 
+        path: 'welcome', 
+        component: WelcomePageComponent,
+    },
+    {
+        path: 'movies',
+        component: MovieCardComponent,
+        canActivate: [AuthGuard],
+    },
+    {
+        path: 'profile',
+        component: UserProfileComponent,
+        canActivate: [AuthGuard],
+    },
+    {
+        path: '',
+        redirectTo: 'welcome',
+        pathMatch: 'full',
+    },
+    { 
+        path: '**', 
+        redirectTo: 'welcome', 
+        pathMatch: 'full',
+    },
 ];
