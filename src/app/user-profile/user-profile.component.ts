@@ -57,10 +57,10 @@ export class UserProfileComponent implements OnInit {
     }
 
     this.fetchApiData.getUser(Username).subscribe({
-      next: (resp: any) => {
-        console.log('API Response:', resp);
-        if (resp.user) {
-          this.user = resp.user;
+      next: (user: any) => {
+        console.log('API Response:', user);
+        if (user) {
+          this.user = user;
           this.updatedUser = {
             username: this.user.username || '',
             email: this.user.email || '',

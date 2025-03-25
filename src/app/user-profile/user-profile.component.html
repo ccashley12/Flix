@@ -55,7 +55,7 @@
                     <li *ngFor="let movie of FavoriteMovies">
                         <a class="clickable" (click)="openMovie(movie.movieID)" style="cursor:pointer;"
                             [attr.aria-label]="'Open details for ' + movie.Title">
-                            {{ movie.Title }}
+                            {{ movie }}
                         </a>
                         <span class="delete-icon clickable" (click)="removeFromFavorites(movie.movieID)"
                             [attr.aria-label]="'Remove ' + movie.Title + ' from favorites'">
