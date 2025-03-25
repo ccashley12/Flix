@@ -9,9 +9,17 @@ import { CommonModule } from '@angular/common'; // for *ngIf
 import { MatButtonModule } from '@angular/material/button';
 import { UserRegistrationFormComponent } from '../user-registration-form/user-registration-form.component';
 import { UserLoginFormComponent } from '../user-login-form/user-login-form.component';
+import { ChangeDetectorRef } from '@angular/core';
+
+/**
+ * @summary This component represents the welcome page of the application. It handles user registration, login, and redirects the user based on their authentication and registration status.
+ * @example
+ * <app-welcome-page></app-welcome-page>
+ */
 
 @Component({
   selector: 'app-welcome-page',
+  standalone: true,
   imports: [
     CommonModule,
     FormsModule,
@@ -21,21 +29,22 @@ import { UserLoginFormComponent } from '../user-login-form/user-login-form.compo
     MatButtonModule,
     MatIconModule,
     UserLoginFormComponent,
-    UserRegistrationFormComponent
+    UserRegistrationFormComponent,
   ],
   templateUrl: './welcome-page.component.html',
 })
 export class WelcomePageComponent {
-  isLoggedIn = false; // Tracks if user is logged in
-  isRegistered = false; // Tracks if user is registered
-  selectedTabIndex = 0; // Default login tab
+  isLoggedIn = false;
+  isRegistered = false;
+  selectedTabIndex = 0;
 
-  constructor(private router: Router) {} // For navigation
+  constructor(
+    private router: Router,
+    private cdr: ChangeDetectorRef,
+  ) {} // For navigation
 
   ngOnInit() {
-    // Check if user is logged in
     this.checkAuthStatus();
-    // Check if user is registered
     this.checkRegistrationStatus();
 
     if (this.isLoggedIn) {
@@ -43,44 +52,36 @@ export class WelcomePageComponent {
     } else if (!this.isRegistered) {
       this.selectedTabIndex = 1; // Switch to Signup tab if user is not registered
     }
-  };
-  
+    this.cdr.detectChanges();
+  }
+
   checkAuthStatus(): void {
-    // Update isLoggedIn based on token presence
     this.isLoggedIn = !!localStorage.getItem('token');
-  };
+    this.cdr.detectChanges();
+  }
 
   checkRegistrationStatus(): void {
-    // Update isRegistered based on local storage
     this.isRegistered = localStorage.getItem('isRegistered') === 'true';
-  };
+    this.cdr.detectChanges();
+  }
 
-  // Login
   onLoginSuccess(): void {
-    console.log('onLoginSuccess() called');
-
     this.checkAuthStatus();
-    console.log('isLoggedIn after checkAuthStatus:', this.isLoggedIn);
 
     if (this.isLoggedIn) {
-      console.log('User is logged in, navigating to /movies...');
       this.router.navigate(['/movies']).then(() => {
-        console.log('Navigation successful, reloading page...');
         window.location.reload();
       });
-    } else {
-      console.log('User is NOT logged in. Navigation will not happen.');
     }
-  };
+  }
 
-  // Registration
   onRegistrationSuccess(): void {
     this.isRegistered = true;
     localStorage.setItem('isRegistered', 'true');
     this.selectedTabIndex = 0; // Switch to Login tab after successful signup
-  };
+    this.cdr.detectChanges();
+  }
 
-  // Log out the user and clear stored data
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -88,5 +89,7 @@ export class WelcomePageComponent {
     this.isLoggedIn = false;
     this.isRegistered = false;
     this.checkAuthStatus();
-  };
+    this.cdr.detectChanges();
+    this.router.navigate(['/welcome']);
+  }
 }
