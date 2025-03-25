@@ -28,7 +28,7 @@ import { MatDialog } from '@angular/material/dialog';
   ],
 })
 export class UserProfileComponent implements OnInit {
-  User: any = {}; // Stores user data
+  user: any = {}; // Stores user data
   updatedUser: any = {}; // Stores updated user data for edits
   FavoriteMovies: any[] = []; // List of user's favorite movies
   hide: boolean = true; // For password visibility
@@ -46,7 +46,8 @@ export class UserProfileComponent implements OnInit {
 
   // Fetch user data from API
   getUserProfile(): void {
-    const Username = localStorage.getItem('user');
+    const Username = this.fetchApiData.getUsername();
+    console.log('Username retrieved from localStorage:', Username);
     if (!Username) {
       console.error('No username found in localStorage.');
       this.snackBar.open('No username found in localStorage. Please log in.', 'OK', {
@@ -58,18 +59,19 @@ export class UserProfileComponent implements OnInit {
     this.fetchApiData.getUser(Username).subscribe({
       next: (resp: any) => {
         console.log('API Response:', resp);
-        if (resp.User) {
-          this.User = resp.User;
+        if (resp.user) {
+          this.user = resp.user;
           this.updatedUser = {
-            Username: this.User.Username || '',
-            Email: this.User.Email || '',
-            Password: '',
-            Birthday: this.User.Birthday ? this.formatDate(this.User.Birthday) : '',
+            username: this.user.username || '',
+            email: this.user.email || '',
+            password: '',
+            birthday: this.user.birthday ? this.formatDate(this.user.birthday) : '',
           };
-          this.FavoriteMovies = Array.isArray(this.User.FavoriteMovies) ? this.User.FavoriteMovies : [];
-          localStorage.setItem('user', JSON.stringify(this.User));
+          this.FavoriteMovies = this.user.FavoriteMovies || [];
+          localStorage.setItem('user', JSON.stringify(this.user));
         } else {
           console.error('User data is missing from the API response.');
+          return;
         }
       },
       error: (err) => {
@@ -83,12 +85,12 @@ export class UserProfileComponent implements OnInit {
 
   // Open movie dialog
   openMovie(movie: any): void {
-    if (!movie || !movie.Title) {
+    if (!movie || !movie.title) {
       console.error('Invalid movie data:', movie);
       return;
     }
 
-    this.fetchApiData.getMovie(movie.Title).subscribe({
+    this.fetchApiData.getMovie(movie.title).subscribe({
       next: (fullMovie) => {
         this.dialog.open(MovieDetailsDialogComponent, {
           data: { movie: fullMovie },
@@ -133,21 +135,21 @@ export class UserProfileComponent implements OnInit {
     const updatedData: any = {};
     if (
       this.updatedUser.Username &&
-      this.updatedUser.Username !== this.User.Username
+      this.updatedUser.Username !== this.user.Username
     ) {
       updatedData.newUsername = this.updatedUser.Username;
     }
-    if (this.updatedUser.Email && this.updatedUser.Email !== this.User.Email) {
-      updatedData.newEmail = this.updatedUser.Email;
+    if (this.updatedUser.email && this.updatedUser.email !== this.user.email) {
+      updatedData.newEmail = this.updatedUser.email;
     }
-    if (this.updatedUser.Password && this.updatedUser.Password.trim()) {
-      updatedData.newPassword = this.updatedUser.Password.trim();
+    if (this.updatedUser.password && this.updatedUser.password.trim()) {
+      updatedData.newPassword = this.updatedUser.password.trim();
     }
     if (
-      this.updatedUser.Birthday &&
-      this.updatedUser.Birthday !== this.User.Birthday
+      this.updatedUser.birthday &&
+      this.updatedUser.birthday !== this.user.birthday
     ) {
-      updatedData.newBirthday = this.updatedUser.Birthday;
+      updatedData.newBirthday = this.updatedUser.birthday;
     }
     console.log('Updating with:', updatedData);
 
@@ -163,8 +165,8 @@ export class UserProfileComponent implements OnInit {
         });
         localStorage.setItem('user', JSON.stringify(resp.User));
 
-        if (resp.User.Username && resp.User.Username !== Username) {
-          localStorage.setItem('user', resp.User.Username);
+        if (resp.user.Username && resp.user.Username !== Username) {
+          localStorage.setItem('username', resp.user.Username);
         }
 
         this.getUserProfile();
