@@ -5,7 +5,7 @@ import { map, catchError } from 'rxjs/operators';
 
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FetchApiDataService {
   private apiUrl = 'https://cinema-express-948d60ca8d20.herokuapp.com/';
@@ -14,7 +14,7 @@ export class FetchApiDataService {
  // This will provide HttpClient to the entire class, making it available via this.http
   constructor(private http: HttpClient) {}
 
- // Making the api call for the user registration endpoint
+   // Making the api call for the user registration endpoint
  public userRegistration(userDetails: any): Observable<any> {
   return this.http
     .post(this.apiUrl + 'users', userDetails, {
@@ -30,10 +30,11 @@ export class FetchApiDataService {
 
   //User Login (stored token)
   public userLogin(userDetails: any): Observable<any> {
+    console.log(userDetails);
     return this.http
       .post<{
         token: string;
-        user: { Username: string };
+        user: { Username: any };
       }>(`${this.apiUrl}login`, userDetails)
       .pipe(
         map((response) => {
@@ -43,12 +44,11 @@ export class FetchApiDataService {
           } else {
             console.error('Invalid login response:', response);
           }
-          return { token: response.token, username: response.user.Username }; // return only needed info
+          return response;
         }),
         catchError(this.handleError),
       );
   }
-
   //Get Authorization headers
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
@@ -60,6 +60,29 @@ export class FetchApiDataService {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`
     });
+  };
+
+  //Get user info
+  public getUser(Username: string): Observable<any> {
+    return this.http
+      .get(`${this.apiUrl}users/${encodeURIComponent(Username)}`, { headers: this.getAuthHeaders() })
+      .pipe(
+        map(this.extractResponseData),
+        catchError((error) => {
+          console.error('Error fetching user info:', error);
+          return this.handleError(error);  // Pass the error to your error handler
+        })
+      );
+  };
+  public getUsername(): string | null {
+    const userData = localStorage.getItem('user');
+    try {
+      const parsedUser = JSON.parse (userData || '{}');
+      return parsedUser.Username || null; // Directly get the username from localStorage
+    } catch (error) {
+      console.error('Error retrieving username from localStorage:', error);
+      return null;
+    }
   };
 
   //Get ALL movies
@@ -81,7 +104,7 @@ export class FetchApiDataService {
   //Get director info
   public getDirector(directorName: string): Observable<any> {
     return this.http
-      .get(this.apiUrl + `movies/directors/${directorName}`, {
+      .get(`${this.apiUrl}movies/directors/${encodeURIComponent(directorName)}`, {
         headers: this.getAuthHeaders(),
       })
       .pipe(catchError(this.handleError));
@@ -90,33 +113,9 @@ export class FetchApiDataService {
   //Get genre info
   public getGenre(genreName: string): Observable<any> {
     return this.http
-      .get(this.apiUrl + `movies/genre/${genreName}`, { headers: this.getAuthHeaders() })
+      .get(`${this.apiUrl}movies/genre/${genreName}`, { headers: this.getAuthHeaders() })
       .pipe(map(this.extractResponseData),
         catchError(this.handleError));
-  };
-
-  //Get user info
-  public getUser(Username: string): Observable<any> {
-    return this.http
-      .get(`${this.apiUrl}users/${encodeURIComponent(Username)}`, { headers: this.getAuthHeaders() })
-      .pipe(
-        map((response) => {
-          console.log('API Response:', response);  // Log the full response to check
-          return this.extractResponseData(response);  // Assuming extractResponseData is a function that processes the data
-        }),
-        catchError((error) => {
-          console.error('Error fetching user info:', error);
-          return this.handleError(error);  // Pass the error to your error handler
-        })
-      );
-  }
-  public getUsername(): string | null {
-    try {
-      return localStorage.getItem('username'); // Directly get the username from localStorage
-    } catch (error) {
-      console.error('Error retrieving username from localStorage:', error);
-      return null;
-    }
   };
 
   //Get user favorite movies
@@ -130,7 +129,7 @@ export class FetchApiDataService {
     return this.http
       .get<{ User: { FavoriteMovies: any[] } }>(
         `${this.apiUrl}users/${encodeURIComponent(Username)}`, 
-        { headers: this.getAuthHeaders() }
+        { headers: this.getAuthHeaders() },
       )
       .pipe(
         map((response) => {
@@ -143,8 +142,7 @@ export class FetchApiDataService {
           }
   
           // Retrieve and update user in localStorage
-          const storedUser = localStorage.getItem('user');
-          const updatedUser = storedUser ? JSON.parse(storedUser) : {};
+          const updatedUser = JSON.parse(localStorage.getItem('user') || '{}');
           updatedUser.FavoriteMovies = response.User.FavoriteMovies;
           localStorage.setItem('user', JSON.stringify(updatedUser));
   
@@ -203,11 +201,28 @@ export class FetchApiDataService {
 
   //Delete user account
   public deleteUser(): Observable<any> {
-    const Username = this.getUsername();
+    const userData = localStorage.getItem('user');
+    let Username: string;
+
+    try {
+      const parsedUser = JSON.parse(userData || '');
+      Username = parsedUser.Username || parsedUser;
+    } catch (error) {
+      Username = userData || ''; // Fallback
+    }
+
+    if (!Username || typeof Username !== 'string') {
+      return throwError(
+        () => new Error('Invalid username found in local storage'),
+      );
+    }
+
     return this.http
-      .delete(`${this.apiUrl}users/${Username}`, { headers: this.getAuthHeaders() })
+      .delete(`${this.apiUrl}users/${encodeURIComponent(Username)}`, {
+        headers: this.getAuthHeaders(),
+      })
       .pipe(catchError(this.handleError));
-  };
+  }
 
   //Delete favorite movie from user account
   public removeFavoriteMovie(movieID: string): Observable<any> {
