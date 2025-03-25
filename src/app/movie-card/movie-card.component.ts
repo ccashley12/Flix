@@ -37,8 +37,8 @@ export class MovieCardComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(
-    private fetchApiData: FetchApiDataService,
-    @Optional() public dialog: MatDialog,
+    public fetchApiData: FetchApiDataService,
+    public dialog: MatDialog,
     private cdRef: ChangeDetectorRef,
   ) {}
 
@@ -65,7 +65,7 @@ export class MovieCardComponent implements OnInit {
     this.fetchApiData.getUserFavorites().subscribe({
       next: (favorites: string[]) => {
         this.FavoriteMovies = favorites;
-        const updatedUser = JSON.parse(localStorage.getItem('User') || '{}');
+        const updatedUser = JSON.parse(localStorage.getItem('user') || '{}');
         updatedUser.favorites = favorites;
         localStorage.setItem('user', JSON.stringify(updatedUser));
       },
