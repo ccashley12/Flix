@@ -10,13 +10,13 @@
                     <mat-form-field appearance="outline">
                         <mat-label>Username</mat-label>
                         <input matInput [(ngModel)]="updatedUser.Username" name="username"
-                            [attr.aria-label]="'Username input'" placeholder="{{ User.Username }}">
+                            [attr.aria-label]="'Username input'" placeholder="{{ user.Username }}">
                         <mat-icon matSuffix aria-hidden="true">mode_edit</mat-icon>
                     </mat-form-field>
                     <mat-form-field appearance="outline">
                         <mat-label>Email</mat-label>
                         <input matInput type="email" [(ngModel)]="updatedUser.Email" name="email"
-                            [attr.aria-label]="'Email input'" placeholder="{{ User.Email }}">
+                            [attr.aria-label]="'Email input'" placeholder="{{ user.Email }}">
                         <mat-icon matSuffix aria-hidden="true">mode_edit</mat-icon>
                     </mat-form-field>
                     <mat-form-field appearance="outline">
@@ -46,7 +46,7 @@
         </mat-tab>
         <mat-tab>
             <ng-template mat-tab-label>
-                <span>Favorites</span>
+                <span>Favorite Movies</span>
             </ng-template>
             <div class="tab-content">
                 <h2>Your Favorite Movies</h2>
