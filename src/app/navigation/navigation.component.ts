@@ -50,9 +50,8 @@ export class NavigationComponent implements OnInit, DoCheck, OnDestroy {
     this.routerSub = this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
-        // Show navigation only if URL is not /welcome
-        this.showNavigation = event.url !== '/welcome';
-        this.cdr.markForCheck();
+        this.showNavigation = !event.url.startsWith('/welcome'); // Show navbar on routes other than /welcome
+        this.cdr.detectChanges(); // Detect the component for change detection
       });
   };
 
