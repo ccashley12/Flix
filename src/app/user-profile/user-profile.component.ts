@@ -102,17 +102,17 @@ export class UserProfileComponent implements OnInit {
   };
 
   // Remove from favorites
-  removeFromFavorites(movieID: string): void {
+  removeFromFavorites(movie: any): void {
     const Username = this.fetchApiData.getUsername();
     if (!Username) {
       console.error('No username found in localStorage.');
       return;
     }
 
-    this.fetchApiData.removeFavoriteMovie(movieID).subscribe({
-      next: (response) => {
+    this.fetchApiData.removeFavoriteMovie(movie).subscribe({
+      next: (movie) => {
         this.FavoriteMovies = this.FavoriteMovies.filter(
-          (movie) => movie.movieID !== movieID,
+          (movie) => movie !== movie,
         );
 
         const updatedUser = JSON.parse(localStorage.getItem('user') || '{}');
@@ -159,14 +159,14 @@ export class UserProfileComponent implements OnInit {
     }
     // Send update request to API
     this.fetchApiData.updateUser(updatedData).subscribe({
-      next: (resp: any) => {
+      next: (user: any) => {
         this.snackBar.open('Profile updated successfully!', 'OK', {
           duration: 3000,
         });
-        localStorage.setItem('user', JSON.stringify(resp.User));
+        localStorage.setItem('user', JSON.stringify(user));
 
-        if (resp.user.Username && resp.user.Username !== Username) {
-          localStorage.setItem('username', resp.user.Username);
+        if (user.Username && user.Username !== Username) {
+          localStorage.setItem('username', user.Username);
         }
 
         this.getUserProfile();
