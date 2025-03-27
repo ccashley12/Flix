@@ -202,14 +202,19 @@ export class FetchApiDataService {
   //Delete user account
   public deleteUser(): Observable<any> {
     const userData = localStorage.getItem('user');
+    console.log('User data from localStorage:', userData);
     let Username: string;
 
     try {
-      const parsedUser = JSON.parse(userData || '');
-      Username = parsedUser.Username || parsedUser;
+      const parsedUser = userData ? JSON.parse(userData) : null;
+      console.log('Parsed user:', parsedUser);
+      Username = parsedUser.Username ?? '';
     } catch (error) {
-      Username = userData || ''; // Fallback
+      console.error('Error parsing user data from local storage:', error);
+      Username = ''; // Fallback
     }
+
+    console.log('Final Username:', Username);
 
     if (!Username || typeof Username !== 'string') {
       return throwError(
@@ -225,7 +230,7 @@ export class FetchApiDataService {
   }
 
   //Delete favorite movie from user account
-  public removeFavoriteMovie(movieID: string): Observable<any> {
+  public removeFavoriteMovie(movie: string): Observable<any> {
     const Username = this.getUsername();
     if (!Username) {
       return throwError(() => new Error('User is not logged in.'));
@@ -233,7 +238,7 @@ export class FetchApiDataService {
 
     return this.http
       .delete(
-        `${this.apiUrl}users/${encodeURIComponent(Username)}/movies/${movieID}`,
+        `${this.apiUrl}users/${encodeURIComponent(Username)}/movies/${movie}`,
         { headers: this.getAuthHeaders() },
       )
       .pipe(catchError(this.handleError));
