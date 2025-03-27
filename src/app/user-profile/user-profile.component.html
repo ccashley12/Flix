@@ -53,11 +53,11 @@
                 <ul *ngIf="FavoriteMovies.length > 0; else noFavorites" class="listbox" cdkListbox
                     [attr.aria-label]="'Favorite Movies List'">
                     <li *ngFor="let movie of FavoriteMovies">
-                        <a class="clickable" (click)="openMovie(movie.movieID)" style="cursor:pointer;"
+                        <a class="clickable" (click)="openMovie(movie)" style="cursor:pointer;"
                             [attr.aria-label]="'Open details for ' + movie.Title">
                             {{ movie }}
                         </a>
-                        <span class="delete-icon clickable" (click)="removeFromFavorites(movie.movieID)"
+                        <span class="delete-icon clickable" (click)="removeFromFavorites(movie)"
                             [attr.aria-label]="'Remove ' + movie.Title + ' from favorites'">
                             <mat-icon aria-hidden="true">delete</mat-icon>
                         </span>
