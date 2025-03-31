@@ -1,4 +1,4 @@
-# CinemaExpressAngular
+# CinemaExpress-Angular
 
 
 _CinemaExpress_ is an Angular-based movie app that provides users with details on various movies, directors, and genres. Users can register, log in, and create a list of their favorite movies. Built with **Angular Material** and connected to an existing **RESTful API**
