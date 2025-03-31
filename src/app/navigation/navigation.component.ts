@@ -16,6 +16,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 
+/**
+ * @summary The NavbarComponent manages the navigation bar's visibility, side navigation state,
+ * and user authentication status. It is used for showing the navbar, toggling the side navigation,
+ * and logging out the user.
+ * @example
+ * <app-navbar></app-navbar>
+ */
 @Component({
   selector: 'app-navigation',
   standalone: true,
@@ -34,9 +41,24 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 })
 
 export class NavigationComponent implements OnInit, DoCheck, OnDestroy {
+  /**
+   * @property {boolean} isLoggedIn - Tracks if the user is logged in.
+   * @default false
+   */
   isLoggedIn = false;
+  /**
+   * @property {boolean} isSidenavOpen - Tracks the state of the sidenav (open/closed).
+   * @default false
+   */
   isSidenavOpen = false;
+  /**
+   * @property {boolean} showNavigation - Tracks the visibility of the navbar.
+   * @default false
+   */
   showNavigation = false;
+  /**
+   * @property {Subscription} routerSub - Subscription for router events.
+   */
   private routerSub!: Subscription;
 
   constructor(
@@ -44,6 +66,10 @@ export class NavigationComponent implements OnInit, DoCheck, OnDestroy {
     private cdr: ChangeDetectorRef,
   ) {}
 
+  /**
+   * @summary Initializes the component, checks authentication status, and listens to route changes.
+   * @returns {void}
+   */
   ngOnInit() {
     // Check authentication when component initializes
     this.checkAuthStatus();
@@ -55,11 +81,19 @@ export class NavigationComponent implements OnInit, DoCheck, OnDestroy {
       });
   };
 
+  /**
+   * @summary Checks authentication status whenever the change detection runs.
+   * @returns {void}
+   */
   ngDoCheck() {
     // Check auth status on change detection
     this.checkAuthStatus();
   };
 
+  /**
+   * @summary Cleans up the router subscription when the component is destroyed.
+   * @returns {void}
+   */
   ngOnDestroy() {
     // Check for active subsription and clean up
     if (this.routerSub) {
@@ -67,17 +101,26 @@ export class NavigationComponent implements OnInit, DoCheck, OnDestroy {
     }
   };
 
-  // Check if a token exists in localStorage and update isLoggedIn accordingly
+  /**
+   * @summary Checks if a token exists in localStorage and updates the isLoggedIn state accordingly.
+   * @returns {void}
+   */
   checkAuthStatus(): void {
     this.isLoggedIn = !!localStorage.getItem('token');
   };
 
-  // Toggle the sidenav's open/close state
+  /**
+   * @summary Toggles the open/close state of the side navigation.
+   * @returns {void}
+   */
   toggleSidenav(): void {
     this.isSidenavOpen = !this.isSidenavOpen;
   };
 
-  // Log out the user and clear stored data
+  /**
+   * @summary Logs out the user, clears stored data from localStorage, and navigates to the welcome page.
+   * @returns {void}
+   */
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('user');

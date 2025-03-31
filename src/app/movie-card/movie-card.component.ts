@@ -12,6 +12,12 @@ import {
 } from '@angular/material/paginator';
 import { MovieDetailsDialogComponent } from '../movie-details-dialog/movie-details-dialog.component';
 
+/**
+ * @summary The MovieCardComponent is responsible for displaying a list of movies,
+ * allowing users to interact with each movie's details, toggle favorites, and paginate through the list.
+ * @example
+ * <app-movie-card></app-movie-card>
+ */
 @Component({
   selector: 'app-movie-card',
   standalone: true,
@@ -27,12 +33,35 @@ import { MovieDetailsDialogComponent } from '../movie-details-dialog/movie-detai
   ],
 })
 export class MovieCardComponent implements OnInit {
+  /**
+   * @property {any[]} movies - List of all movies fetched from the API.
+   * @default []
+   */
   movies: any[] = [];
+  /**
+   * @property {any[]} displayedMovies - List of movies currently being displayed based on pagination.
+   * @default []
+   */
   displayedMovies: any[] = [];
+  /**
+   * @property {string[]} favoriteMovies - List of movie IDs that are marked as favorites by the user.
+   * @default []
+   */
   FavoriteMovies: string[] = [];
-
+  /**
+   * @property {boolean} hidePageSize - Controls whether the page size selection is hidden.
+   * @default true
+   */
   hidePageSize = true;
+  /**
+   * @property {number} pageSize - The number of items to display per page.
+   * @default 6
+   */
   pageSize = 6;
+  /**
+   * @property {number} pageIndex - The current page index for pagination.
+   * @default 0
+   */
   pageIndex = 0;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -42,13 +71,20 @@ export class MovieCardComponent implements OnInit {
     private cdRef: ChangeDetectorRef,
   ) {}
 
+  /**
+   * @summary Initializes the component and fetches movies and favorites on load.
+   * @returns {void}
+   */
   ngOnInit(): void {
     // Load movies and favorites on component init
     this.fetchMovies();
     this.fetchFavorites();
   }
 
-  // Fetch all movies from API and update the displayed movies (for pagination)
+  /**
+   * @summary Fetches all movies from the API and updates the displayed movies for pagination.
+   * @returns {void}
+   */
   fetchMovies(): void {
     this.fetchApiData.getAllMovies().subscribe({
       next: (movies) => {
@@ -60,7 +96,10 @@ export class MovieCardComponent implements OnInit {
     });
   };
 
-  // Fetch user's favorite movies from API and update local storage
+  /**
+   * @summary Fetches the user's favorite movies from the API and updates the local storage.
+   * @returns {void}
+   */
   fetchFavorites(): void {
     this.fetchApiData.getUserFavorites().subscribe({
       next: (favorites: string[]) => {
@@ -73,10 +112,20 @@ export class MovieCardComponent implements OnInit {
     });
   };
 
+  /**
+   * @summary Checks if a movie is in the user's favorites.
+   * @param {string} movieID - The ID of the movie.
+   * @returns {boolean} True if the movie is a favorite, false otherwise.
+   */
   isFavorite(movieID: string): boolean {
     return this.FavoriteMovies.includes(movieID);
   };
 
+  /**
+   * @summary Toggles the favorite status of a movie, adding or removing it from the favorites list.
+   * @param {string} movieID - The ID of the movie to toggle.
+   * @returns {void}
+   */
   toggleFavorite(movieID: string): void {
     if (this.isFavorite(movieID)) {
       // Remove from favorites
@@ -101,7 +150,10 @@ export class MovieCardComponent implements OnInit {
     }
   };
 
-  // Helper function to update local storage & detect changes
+  /**
+   * @summary Updates the user's favorite movies in local storage and triggers change detection.
+   * @returns {void}
+   */
   updateLocalFavorites(): void {
     const updatedUser = JSON.parse(localStorage.getItem('user') || '{}');
     updatedUser.favorites = this.FavoriteMovies;
@@ -110,7 +162,11 @@ export class MovieCardComponent implements OnInit {
     this.cdRef.detectChanges();
   };
 
-  // Open movie details dialog
+  /**
+   * @summary Opens a dialog to show detailed information about the movie.
+   * @param {any} movie - The movie object to view details.
+   * @returns {void}
+   */
   openMovieDetailsDialog(movie: any): void {
     this.dialog.open(MovieDetailsDialogComponent, {
       data: { movie },
@@ -118,13 +174,21 @@ export class MovieCardComponent implements OnInit {
     });
   };
 
-  // Movie display for pagination
+  /**
+   * @summary Updates the list of movies displayed based on the current page index and page size.
+   * @returns {void}
+   */
   updateDisplayedMovies(): void {
     const startIndex = this.pageIndex * this.pageSize;
     const endIndex = startIndex + this.pageSize;
     this.displayedMovies = this.movies.slice(startIndex, endIndex);
   };
 
+  /**
+   * @summary Handles pagination changes and updates the displayed movies.
+   * @param {PageEvent} event - The event triggered by the paginator.
+   * @returns {void}
+   */
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;

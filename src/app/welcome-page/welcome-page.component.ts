@@ -34,8 +34,20 @@ import { ChangeDetectorRef } from '@angular/core';
   templateUrl: './welcome-page.component.html',
 })
 export class WelcomePageComponent {
+  /**
+   * @property {boolean} isLoggedIn - Tracks if the user is logged in by checking for a token in localStorage.
+   * @default false
+   */
   isLoggedIn = false;
+  /**
+   * @property {boolean} isRegistered - Tracks if the user is registered by checking the `isRegistered` value in localStorage.
+   * @default false
+   */
   isRegistered = false;
+  /**
+   * @property {number} selectedTabIndex - Tracks the currently selected tab (0 for Login, 1 for Register).
+   * @default 0
+   */
   selectedTabIndex = 0;
 
   constructor(
@@ -43,6 +55,10 @@ export class WelcomePageComponent {
     private cdr: ChangeDetectorRef,
   ) {} // For navigation
 
+  /**
+   * @summary Checks the user's authentication and registration status when the component initializes.
+   * Redirects the user to the `/movies` route if already logged in, or switches to the registration tab if not registered.
+   */
   ngOnInit() {
     this.checkAuthStatus();
     this.checkRegistrationStatus();
@@ -55,16 +71,28 @@ export class WelcomePageComponent {
     this.cdr.detectChanges();
   }
 
+  /**
+   * @summary Checks if the user is logged in by verifying the presence of a token in localStorage.
+   * @returns {void}
+   */
   checkAuthStatus(): void {
     this.isLoggedIn = !!localStorage.getItem('token');
     this.cdr.detectChanges();
   }
 
+  /**
+   * @summary Checks if the user is registered by verifying the `isRegistered` value in localStorage.
+   * @returns {void}
+   */
   checkRegistrationStatus(): void {
     this.isRegistered = localStorage.getItem('isRegistered') === 'true';
     this.cdr.detectChanges();
   }
 
+  /**
+   * @summary Handles successful login. If the user is logged in, they are redirected to the `/movies` route.
+   * @returns {void}
+   */
   onLoginSuccess(): void {
     this.checkAuthStatus();
 
@@ -75,6 +103,10 @@ export class WelcomePageComponent {
     }
   }
 
+  /**
+   * @summary Handles successful registration. The user is registered and the tab switches to the login tab.
+   * @returns {void}
+   */
   onRegistrationSuccess(): void {
     this.isRegistered = true;
     localStorage.setItem('isRegistered', 'true');
@@ -82,6 +114,10 @@ export class WelcomePageComponent {
     this.cdr.detectChanges();
   }
 
+  /**
+   * @summary Logs out the user by clearing their authentication data from localStorage and updating the component state.
+   * @returns {void}
+   */
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('user');

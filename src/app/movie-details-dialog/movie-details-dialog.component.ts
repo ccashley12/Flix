@@ -12,6 +12,12 @@ import { FetchApiDataService } from '../fetch-api-data.service';
 import { GenreDialogComponent } from '../genre-dialog/genre-dialog.component';
 import { DirectorDialogComponent } from '../director-dialog/director-dialog.component';
 
+/**
+ * @summary The MovieDetailsDialogComponent is a dialog that displays detailed information about a selected movie.
+ * It includes the ability to view more information about the movie's genre and director.
+ * @example
+ * <app-movie-details-dialog></app-movie-details-dialog>
+ */
 @Component({
   selector: 'app-movie-details-dialog',
   standalone: true,
@@ -25,6 +31,9 @@ import { DirectorDialogComponent } from '../director-dialog/director-dialog.comp
   styleUrls: ['./movie-details-dialog.component.scss'],
 })
 export class MovieDetailsDialogComponent implements OnInit {
+  /**
+   * @property {any} movie - Stores the movie data passed to the dialog.
+   */
   movie: any;
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any, // Data passed to dialog
@@ -33,6 +42,11 @@ export class MovieDetailsDialogComponent implements OnInit {
     private dialogRef: MatDialogRef<MovieDetailsDialogComponent>, // Reference to current dialog instance
   ) {}
 
+  /**
+   * @summary Initializes the component and assigns movie data. If the genre is provided as a string,
+   * it is converted into an object with a name and description.
+   * @returns {void}
+   */
   ngOnInit(): void {
     // Initialize component and assign movie data
     if (typeof this.data.movie.genre === 'string') {
@@ -41,7 +55,11 @@ export class MovieDetailsDialogComponent implements OnInit {
     }
   }
 
-  // Open genre dialog
+  /**
+   * @summary Opens a dialog displaying detailed information about the movie's genre.
+   * @param {any} genre - The genre object to fetch details for.
+   * @returns {void}
+   */
   openGenreDialog(genre: any): void {
     this.fetchApiData.getGenre(genre.Name).subscribe((genreData) => {
       console.log('Genre data fetched:', genreData);
@@ -52,7 +70,12 @@ export class MovieDetailsDialogComponent implements OnInit {
       this.dialogRef.close();
     });
   }
-  // Open director dialog
+
+  /**
+   * @summary Opens a dialog displaying detailed information about the movie's director.
+   * @param {string} director - The name of the director to fetch details for.
+   * @returns {void}
+   */
   openDirectorDialog(director: string): void {
     this.fetchApiData.getDirector(director).subscribe((director) => {
       this.dialog.open(DirectorDialogComponent, {

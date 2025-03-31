@@ -10,6 +10,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { FetchApiDataService } from '../fetch-api-data.service';
 import { firstValueFrom } from 'rxjs';
 
+/**
+ * @summary A component that provides a login form for the user to authenticate using their username and password.
+ * This component is used to handle user login functionality, including submitting login credentials to the backend
+ * and showing feedback through a snack bar.
+ * @example
+ * <app-user-login-form></app-user-login-form>
+ */
 @Component({
   selector: 'app-user-login-form',
   standalone: true,
@@ -25,15 +32,41 @@ import { firstValueFrom } from 'rxjs';
   templateUrl: './user-login-form.component.html',
 })
 export class UserLoginFormComponent {
+  /**
+   * @property {EventEmitter<void>} loginSuccess - Emits when the login process is successful.
+   */
   @Output() loginSuccess = new EventEmitter<void>();
+  /**
+   * @property {Object} userData - Holds the user input data.
+   * @property {string} userData.Username - The username input.
+   * @property {string} userData.Password - The password input.
+   * @default { Username: '', Password: '' }
+   */
   userData = { Username: '', Password: '' };
+  /**
+   * @property {boolean} hidePassword - Controls the visibility of the password field.
+   * @default true
+   */
   hidePassword = true;
 
-  // Inject dependencies
+  /**
+   * @property {FetchApiDataService} fetchApiData - Service for interacting with the backend API.
+   */
   fetchApiData = inject(FetchApiDataService);
+  /**
+   * @property {MatSnackBar} snackBar - MatSnackBar for showing feedback to the user.
+   */
   snackBar = inject(MatSnackBar);
 
-  // Attempt to login user
+  /**
+   * @summary Attempts to log in the user by sending the credentials to the API.
+   * If successful, stores the token and user details in localStorage,
+   * then emits the login success event and shows a success message.
+   * If an error occurs, it shows an error message.
+   * @returns {Promise<void>}
+   * @example
+   * await loginUser();
+   */
   async loginUser(): Promise<void> {
     try {
       const result = await firstValueFrom(
