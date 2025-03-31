@@ -204,10 +204,10 @@ export class UserProfileComponent implements OnInit {
     ) {
       this.fetchApiData.deleteUser().subscribe({
         next: () => {
+          localStorage.clear();
           this.snackBar.open('Account deleted successfully.', 'OK', {
             duration: 3000,
           });
-          localStorage.clear();
           this.router.navigate(['welcome']);
         },
         error: (err) => {
