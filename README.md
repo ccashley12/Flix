@@ -1,7 +1,7 @@
-# CinemaExpress-Angular
+# Flix
 
 
-_CinemaExpress_ is an Angular-based movie app that provides users with details on various movies, directors, and genres. Users can register, log in, and create a list of their favorite movies. Built with **Angular Material** and connected to an existing **RESTful API**.
+_Flix_ is an Angular-based movie app that provides users with details on various movies, directors, and genres. Users can register, log in, and create a list of their favorite movies. Built with **Angular Material** and connected to an existing **RESTful API**.
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.8.
 
@@ -42,7 +42,7 @@ This project was generated using [Angular CLI](https://github.com/angular/angula
 ## <a name="setup"></a>Setup:
 
 1. **Clone the Repository**
-   `git clone https://github.com/ccashley12/CinemaExpress-Angular.git`
+   `git clone https://github.com/ccashley12/Flix.git`
 
 2. **Navigate to Project Folder**
    `cd CinemaExpress-Angular`
