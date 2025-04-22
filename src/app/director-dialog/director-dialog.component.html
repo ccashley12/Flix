@@ -7,16 +7,6 @@
 </div>
 <mat-dialog-content class="descr" [attr.aria-label]="'Director biography'">
     <p>{{ data.director.Bio }}</p>
-    <div class="listbox-container">
-        <label id="director-movies-label" class="list_label"> Movies by {{ data.director.Name }}:</label>
-        <ul cdkListbox [attr.aria-labelledby]="'director-movies-label'" class="listbox">
-            <li *ngFor="let movies of data.director.movies">
-                <span class="clickable" (click)="openMovie(movies)"
-                    [attr.aria-label]="'Open details for ' + movies.Title">
-                    {{ movies.Title }} </span>
-            </li>
-        </ul>
-    </div>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
     <button mat-button mat-dialog-close [attr.aria-label]="'Close dialog'">
